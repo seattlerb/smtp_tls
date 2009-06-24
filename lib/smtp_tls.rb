@@ -99,7 +99,7 @@ class Net::SMTP
   end
 
   def do_helo(helodomain)
-     begin
+    begin
       if @esmtp then
         ehlo helodomain
       else

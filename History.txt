@@ -1,3 +1,8 @@
+=== 1.0.1 / 2009-06-24
+
+* 1 bug fix
+  * Fix indentation warning on 1.9
+
 === 1.0 / 2009-06-23
 
 * 1 major enhancement
