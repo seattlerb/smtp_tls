@@ -6,7 +6,7 @@ require 'net/smtp'
 
 class Net::SMTP
 
-  class _TLS
+  class SMTP_TLS
     VERSION = '1.0'
   end
 
@@ -47,7 +47,6 @@ class Net::SMTP
     sock = timeout(@open_timeout) { TCPSocket.open @address, @port }
     @socket = Net::InternetMessageIO.new(sock)
     @socket.read_timeout = 60 # @read_timeout
-    @socket.debug_output = STDERR # @debug_output
 
     check_response(critical { recv_response() })
     do_helo helodomain
@@ -59,7 +58,6 @@ class Net::SMTP
     ssl.connect
     @socket = Net::InternetMessageIO.new ssl
     @socket.read_timeout = 60 # @read_timeout
-    @socket.debug_output = STDERR # @debug_output
     do_helo helodomain
 
     authenticate user, secret, authtype if user
@@ -102,6 +100,5 @@ class Net::SMTP
     end
   end
 
-end unless Net::SMTP.private_method_defined? :do_tls_start or
-           Net::SMTP.method_defined? :tls?
+end unless Net::SMTP.private_method_defined? :starttls
 
