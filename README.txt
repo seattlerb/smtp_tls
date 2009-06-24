@@ -4,15 +4,16 @@
 
 == DESCRIPTION:
 
-Provides SMTP TLS support for Ruby 1.8.6 (1.8.7+ has TLS support).  Simply
-require 'smtp_tls' and use the extra TLS option from 1.8.7+ (boolean option at
-the end of Net::SMTP.start).
+Provides SMTP STARTTLS support for Ruby 1.8.6 (built-in for 1.8.7+).  Simply
+require 'smtp_tls' and use the Net::SMTP#enable_starttls method to talk to
+servers that use STARTTLS.
 
   require 'smtp_tls'
   
-  Net::SMTP.start adress, port, domain, user, password, authentication,
-                  use_tls do |smtp|
-    smtp.send_message body, from, to
+  smtp = Net::SMTP.new address, port
+  smtp.enable_starttls
+  smtp.start Socket.gethostname, user, password, authentication do |server|
+    server.send_message message, from, to
   end
 
 == INSTALL:
