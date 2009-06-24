@@ -14,17 +14,28 @@ class Net::SMTP
     send :remove_method, :start
   end
 
+  def self.default_ssl_context
+    OpenSSL::SSL::SSLContext.new
+  end
+
   def self.start(address, port = nil, helo = 'localhost.localdomain',
-                 user = nil, secret = nil, authtype = nil, use_tls = false,
-                 &block) # :yield: smtp
-    new(address, port).start(helo, user, secret, authtype, use_tls, &block)
+                 user = nil, secret = nil, authtype = nil, &block) # :yield: smtp
+    smtp = new address, port
+    smtp.start helo, user, secret, authtype, &block
+  end
+
+  def enable_starttls(context = Net::SMTP.default_ssl_context)
+    raise 'openssl library not installed' unless defined?(OpenSSL)
+    @starttls = :always
+    @ssl_context = context
   end
 
   alias tls_old_start start
 
   def start(helo = 'localhost.localdomain',
-            user = nil, secret = nil, authtype = nil, use_tls = false) # :yield: smtp
-    start_method = use_tls ? :do_tls_start : :do_start
+            user = nil, secret = nil, authtype = nil) # :yield: smtp
+    start_method = @starttls ? :do_tls_start : :do_start
+
     if block_given?
       begin
         send start_method, helo, user, secret, authtype
@@ -35,6 +46,19 @@ class Net::SMTP
     else
       send start_method, helo, user, secret, authtype
       return self
+    end
+  end
+
+  def starttls
+    getok 'STARTTLS'
+  end
+
+  alias tls_old_quit quit # :nodoc:
+
+  def quit
+    begin
+      getok 'QUIT'
+    rescue EOFError
     end
   end
 
@@ -53,9 +77,13 @@ class Net::SMTP
 
     raise 'openssl library not installed' unless defined?(OpenSSL)
     starttls
-    ssl = OpenSSL::SSL::SSLSocket.new sock
+    ssl = OpenSSL::SSL::SSLSocket.new sock, @ssl_context
     ssl.sync_close = true
     ssl.connect
+    if @ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE then
+      ssl.post_connection_check(@address)
+    end
+
     @socket = Net::InternetMessageIO.new ssl
     @socket.read_timeout = 60 # @read_timeout
     do_helo helodomain
@@ -87,18 +115,5 @@ class Net::SMTP
     end
   end
 
-  def starttls
-    getok 'STARTTLS'
-  end
-
-  alias tls_old_quit quit # :nodoc:
-
-  def quit
-    begin
-      getok 'QUIT'
-    rescue EOFError
-    end
-  end
-
-end unless Net::SMTP.private_method_defined? :starttls
+end unless Net::SMTP.method_defined? :starttls
 
