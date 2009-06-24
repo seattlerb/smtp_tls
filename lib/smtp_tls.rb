@@ -7,7 +7,7 @@ require 'net/smtp'
 class Net::SMTP
 
   class SMTP_TLS
-    VERSION = '1.0'
+    VERSION = '1.0.1'
   end
 
   class << self
