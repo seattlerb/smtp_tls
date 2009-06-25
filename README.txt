@@ -8,7 +8,11 @@ Provides SMTP STARTTLS support for Ruby 1.8.6 (built-in for 1.8.7+).  Simply
 require 'smtp_tls' and use the Net::SMTP#enable_starttls method to talk to
 servers that use STARTTLS.
 
-  require 'smtp_tls'
+  require 'net/smtp'
+  begin
+    require 'smtp_tls'
+  rescue LoadError
+  end
   
   smtp = Net::SMTP.new address, port
   smtp.enable_starttls

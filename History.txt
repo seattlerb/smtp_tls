@@ -1,3 +1,8 @@
+=== 1.0.2 / 2009-06-25
+
+* 1 major enhancement
+  * Improved README.txt example for TLS newbies.
+
 === 1.0.1 / 2009-06-24
 
 * 1 bug fix
