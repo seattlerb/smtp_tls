@@ -22,7 +22,7 @@ servers that use STARTTLS.
 
 You can also test your SMTP connection settings using mail_smtp_tls:
 
-  $ date | ruby -Ilib bin/mail_smtp_tls smtp.example.com submission \
+  $ date | mail_smtp_tls smtp.example.com submission \
     "your username" "your password" plain \
     from@example.com to@example.com
   Using SMTP_TLS 1.0.3
