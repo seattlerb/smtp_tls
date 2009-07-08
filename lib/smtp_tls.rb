@@ -70,6 +70,7 @@ class Net::SMTP
 
     sock = timeout(@open_timeout) { TCPSocket.open @address, @port }
     @socket = Net::InternetMessageIO.new(sock)
+    @socket.debug_output = @debug_output
     @socket.read_timeout = 60 # @read_timeout
 
     check_response(critical { recv_response() })
@@ -86,6 +87,7 @@ class Net::SMTP
     end
 
     @socket = Net::InternetMessageIO.new ssl
+    @socket.debug_output = @debug_output
     @socket.read_timeout = 60 # @read_timeout
     do_helo helodomain
 

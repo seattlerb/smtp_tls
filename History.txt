@@ -1,7 +1,8 @@
 === 1.0.3 / 2009-07-??
 
-* 1 bug fix
+* 2 bug fixes
   * Suppress default DH parameters warning
+  * Pass debug output down to child IOs
 
 === 1.0.2 / 2009-06-25
 
