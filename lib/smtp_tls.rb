@@ -7,7 +7,7 @@ require 'net/smtp'
 class Net::SMTP
 
   class SMTP_TLS
-    VERSION = '1.0.2'
+    VERSION = '1.0.3'
   end
 
   class << self
@@ -77,6 +77,7 @@ class Net::SMTP
 
     raise 'openssl library not installed' unless defined?(OpenSSL)
     starttls
+    @ssl_context.tmp_dh_callback = proc { }
     ssl = OpenSSL::SSL::SSLSocket.new sock, @ssl_context
     ssl.sync_close = true
     ssl.connect
