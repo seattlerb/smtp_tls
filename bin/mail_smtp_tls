@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby -w
+
+require 'net/smtp'
+require 'rubygems'
+begin
+  require 'smtp_tls'
+rescue LoadError
+end
+
+if defined?(Net::SMTP::SMTP_TLS) then
+  $stderr.puts "Using SMTP_TLS #{Net::SMTP::SMTP_TLS::VERSION}"
+else
+  $stderr.puts "Using ruby's built-in SMTP TLS support"
+end
+
+if ARGV.empty? then
+  puts "#{$0} host port user password auth_type from to"
+  puts "Then type your message on STDIN"
+  abort
+end
+
+host = ARGV.shift
+port = ARGV.shift
+port = if port =~ /\d/ then
+         port.to_i
+       else
+         Socket.getservbyname port
+       end
+user = ARGV.shift
+password = ARGV.shift
+auth_type = ARGV.shift.intern
+from = ARGV.shift
+to = ARGV.shift
+
+message = <<MESSAGE
+From: #{from}\r
+To: #{to}\r
+\r
+#{$stdin.read}
+MESSAGE
+
+begin
+  $stderr.sync = true
+  smtp = Net::SMTP.new host, port
+  smtp.set_debug_output $stderr
+  smtp.enable_starttls if port != Socket.getservbyname('smtp')
+  smtp.start Socket.gethostname, user, password, auth_type do |server|
+    server.send_message message, from, to
+  end
+rescue Net::SMTPError => e
+  puts e.message
+  exit 1
+end

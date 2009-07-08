@@ -20,6 +20,51 @@ servers that use STARTTLS.
     server.send_message message, from, to
   end
 
+You can also test your SMTP connection settings using mail_smtp_tls:
+
+  $ date | ruby -Ilib bin/mail_smtp_tls smtp.example.com submission \
+    "your username" "your password" plain \
+    from@example.com to@example.com
+  Using SMTP_TLS 1.0.3
+  -> "220 smtp.example.com ESMTP XXX\r\n"
+  <- "EHLO you.example.com\r\n"
+  -> "250-smtp.example.com at your service, [192.0.2.1]\r\n"
+  -> "250-SIZE 35651584\r\n"
+  -> "250-8BITMIME\r\n"
+  -> "250-STARTTLS\r\n"
+  -> "250-ENHANCEDSTATUSCODES\r\n"
+  -> "250 PIPELINING\r\n"
+  <- "STARTTLS\r\n"
+  -> "220 2.0.0 Ready to start TLS\r\n"
+  TLS connection started
+  <- "EHLO you.example.com\r\n"
+  -> "250-smtp.example.com at your service, [192.0.2.1]\r\n"
+  -> "250-SIZE 35651584\r\n"
+  -> "250-8BITMIME\r\n"
+  -> "250-AUTH LOGIN PLAIN\r\n"
+  -> "250-ENHANCEDSTATUSCODES\r\n"
+  -> "250 PIPELINING\r\n"
+  <- "AUTH PLAIN BASE64_STUFF_HERE\r\n"
+  -> "235 2.7.0 Accepted\r\n"
+  <- "MAIL FROM:<from@example.com>\r\n"
+  -> "250 2.1.0 OK XXX\r\n"
+  <- "RCPT TO:<to@example.com>\r\n"
+  -> "250 2.1.5 OK XXX\r\n"
+  <- "DATA\r\n"
+  -> "354  Go ahead XXX\r\n"
+  writing message from String
+  wrote 91 bytes
+  -> "250 2.0.0 OK 1247028988 XXX\r\n"
+  <- "QUIT\r\n"
+  -> "221 2.0.0 closing connection XXX\r\n"
+
+This will connect to smtp.example.com using the submission port (port 587)
+with a username and password of "your username" and "your password" and
+authenticate using plain-text auth (the submission port always uses SSL) then
+send the current date to to@example.com from from@example.com.
+
+Debug output from the connection will be printed on stderr.
+
 == INSTALL:
 
   sudo gem install smtp_tls

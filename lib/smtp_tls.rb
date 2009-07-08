@@ -80,6 +80,7 @@ class Net::SMTP
     starttls
     @ssl_context.tmp_dh_callback = proc { }
     ssl = OpenSSL::SSL::SSLSocket.new sock, @ssl_context
+    @debug_output << "TLS connection started\n" if @debug_output
     ssl.sync_close = true
     ssl.connect
     if @ssl_context.verify_mode != OpenSSL::SSL::VERIFY_NONE then
