@@ -2,4 +2,5 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
+bin/mail_smtp_tls
 lib/smtp_tls.rb
